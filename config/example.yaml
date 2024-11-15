@@ -1,0 +1,66 @@
+
+# config.yaml
+
+project:
+  name: OpenWeather_ETL
+  version: 1.0
+  description: "ETL pipeline for fetching, cleaning, and storing weather data from OpenWeather API."
+  author: "Your Name"
+  created: "2024-11-15"
+
+api:
+  base_url: "https://api.openweathermap.org/data/3.0/"
+  api_key: "your_api_key_here"  # Replace with your actual API key
+  request_parameters:
+    units: "metric"  # Options: standard, metric, imperial
+    lang: "en"       # Language for descriptions (e.g., en, es, fr)
+    exclude: ["minutely"]  # Data parts to exclude from response
+  rate_limit:
+    max_requests: 60
+    per_seconds: 60
+
+database:
+  type: sqlite
+  path: "./data/open_weather_map.db"
+  table_names:
+    current_weather: "current_weather"
+    minutely_forecast: "minutely_forecast"
+    hourly_forecast: "hourly_forecast"
+    daily_forecast: "daily_forecast"
+
+data:
+  storage_path: "./data"
+  log_path: "./logs"
+  raw_data_file: "raw_weather_data.json"
+  processed_data_file: "cleaned_weather_data.parquet"
+
+etl:
+  fetch:
+    retry_attempts: 3
+    timeout_seconds: 10
+  transform:
+    validation_enabled: true
+    schema_file: "./schemas/weather_schema.yaml"
+  load:
+    batch_size: 100
+
+logging:
+  level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  file: "./logs/etl_pipeline.log"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+scheduling:
+  interval: "daily"  # Options: hourly, daily, weekly
+  time: "02:00:00"  # Format: HH:MM:SS (24-hour)
+
+notifications:
+  enabled: true
+  email:
+    sender: "etl_notifications@example.com"
+    recipients:
+      - "your_email@example.com"
+    smtp_server: "smtp.example.com"
+    smtp_port: 587
+    use_tls: true
+    username: "your_email_username"
+    password: "your_email_password"
